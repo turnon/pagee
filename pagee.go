@@ -11,8 +11,8 @@ import (
 
 var temp = template.New("a")
 
-func uri2doc(uri string) (*goquery.Document, error) {
-	resp, err := http.Get(uri)
+func url2doc(url string) (*goquery.Document, error) {
+	resp, err := http.Get(url)
 
 	if err != nil {
 		return nil, err

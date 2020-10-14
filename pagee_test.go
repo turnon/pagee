@@ -2,25 +2,25 @@ package pagee
 
 import "testing"
 
-func TestUri2docWithRightUri(t *testing.T) {
-	uri := "http://ifeve.com/"
-	doc, err := uri2doc(uri)
+func TestUrl2docWithRighturl(t *testing.T) {
+	url := "http://ifeve.com/"
+	doc, err := url2doc(url)
 	if err != nil {
-		t.Error(uri + " should be accessible")
+		t.Error(url + " should be accessible")
 	}
 	if doc == nil {
-		t.Error(uri + " should be parse-able")
+		t.Error(url + " should be parse-able")
 	}
 }
 
-func TestUri2docWithWrongUri(t *testing.T) {
-	uri := "http://ifeve2.com/"
-	doc, err := uri2doc(uri)
+func TestUrl2docWithWrongurl(t *testing.T) {
+	url := "http://ifeve2.com/"
+	doc, err := url2doc(url)
 	if err == nil {
-		t.Error(uri + " should not be accessible")
+		t.Error(url + " should not be accessible")
 	}
 	if doc != nil {
-		t.Error(uri + " should not be parse-able")
+		t.Error(url + " should not be parse-able")
 	}
 }
 
