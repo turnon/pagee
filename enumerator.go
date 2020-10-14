@@ -1,16 +1,30 @@
 package pagee
 
 func newFinRange(from, to int, step ...int) <-chan int {
-	st := 1
-	if len(step) >= 1 {
-		st = step[0]
-	}
+	st := takeStep(step)
 
 	ex := func(fr int) bool {
 		return fr > to
 	}
 
 	return newRange(from, st, ex)
+}
+
+func newInfRange(from int, step ...int) <-chan int {
+	st := takeStep(step)
+
+	ex := func(_ int) bool {
+		return false
+	}
+
+	return newRange(from, st, ex)
+}
+
+func takeStep(args []int) int {
+	if len(args) >= 1 {
+		return args[0]
+	}
+	return 1
 }
 
 func newRange(from int, step int, exceeded func(int) bool) <-chan int {
