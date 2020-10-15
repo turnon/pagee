@@ -1,5 +1,21 @@
 package pagee
 
+func hashToRanger(hash map[string]interface{}) <-chan int {
+	from := hash["from"]
+
+	step, stepExists := hash["step"]
+	if !stepExists {
+		step = 1
+	}
+
+	to, toExists := hash["to"]
+	if toExists {
+		return newFinRange(from.(int), to.(int), step.(int))
+	}
+
+	return newInfRange(from.(int), step.(int))
+}
+
 func newFinRange(from, to int, step ...int) <-chan int {
 	st := takeStep(step)
 
