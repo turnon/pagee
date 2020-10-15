@@ -43,6 +43,18 @@ func takeStep(args []int) int {
 	return 1
 }
 
+// params: from, step, to
+func newEnum(from int, args ...int) <-chan int {
+	switch len(args) {
+	case 0:
+		return newInfRange(from)
+	case 1:
+		return newInfRange(from, args[0])
+	default:
+		return newFinRange(from, args[1], args[0])
+	}
+}
+
 func newRange(from int, step int, exceeded func(int) bool) <-chan int {
 	ch := make(chan int)
 	go func() {
