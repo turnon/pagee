@@ -8,15 +8,18 @@ import (
 func TestIntervalReadInt(t *testing.T) {
 	enum := newEnum(1, 1, 3)
 	slowEnum := intervalReadInt(1, enum)
+
+	testDuration(t, 3, 4, func() {
+		for range slowEnum {
+		}
+	})
+}
+
+func testDuration(t *testing.T, min time.Duration, max time.Duration, fn func()) {
 	start := time.Now()
-
-	for range slowEnum {
-	}
-
+	fn()
 	duration := time.Now().Sub(start) / time.Second
-	seconds := int(duration)
-	if seconds < 3 || seconds > 4 {
-		t.Error("too long ? too short ", seconds)
+	if duration < min || duration > max {
+		t.Error("too long ? too short ", duration)
 	}
-
 }
