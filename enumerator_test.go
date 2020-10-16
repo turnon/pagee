@@ -1,14 +1,12 @@
 package pagee
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestHashToRangerUsingFinRangeWithoutStep(t *testing.T) {
-	hash := map[string]interface{}{
-		"from": 1,
-		"to":   3,
-	}
-	enum := hashToRanger(hash)
-	testFinWithoutStep(enum, t)
+func TestJSONFinRangeWithoutStep(t *testing.T) {
+	it := newIter([]byte(`{"from": 1, "to": 3}`))
+	testFinWithoutStep(it.toRange(), t)
 }
 
 func TestNewFinRangeWithoutStep(t *testing.T) {
@@ -27,14 +25,9 @@ func testFinWithoutStep(enum <-chan int, t *testing.T) {
 	}
 }
 
-func TestHashToRangerUsingFinRangeWithStep(t *testing.T) {
-	hash := map[string]interface{}{
-		"from": 1,
-		"to":   6,
-		"step": 2,
-	}
-	enum := hashToRanger(hash)
-	testFinWithStep(enum, t)
+func TestJSONFinRangeWithStep(t *testing.T) {
+	it := newIter([]byte(`{"from": 1, "step": 2, "to": 6}`))
+	testFinWithStep(it.toRange(), t)
 }
 
 func TestNewFinRangeWithStep(t *testing.T) {
@@ -53,12 +46,9 @@ func testFinWithStep(enum <-chan int, t *testing.T) {
 	}
 }
 
-func TestHashToRangerUsingInfRangeWithoutStep(t *testing.T) {
-	hash := map[string]interface{}{
-		"from": 1,
-	}
-	enum := hashToRanger(hash)
-	testInfWithoutStep(enum, t)
+func TestJSONInfRangeWithoutStep(t *testing.T) {
+	it := newIter([]byte(`{"from": 1}`))
+	testInfWithoutStep(it.toRange(), t)
 }
 
 func TestNewInfRangeWithoutStep(t *testing.T) {
@@ -80,13 +70,9 @@ func testInfWithoutStep(enum <-chan int, t *testing.T) {
 	}
 }
 
-func TestHashToRangerUsingInfRangeWithStep(t *testing.T) {
-	hash := map[string]interface{}{
-		"from": 1,
-		"step": 2,
-	}
-	enum := hashToRanger(hash)
-	testInfWithStep(enum, t)
+func TestJSONInfRangeInfRangeWithStep(t *testing.T) {
+	it := newIter([]byte(`{"from": 1, "step": 2}`))
+	testInfWithStep(it.toRange(), t)
 }
 
 func TestNewInfRangeWithStep(t *testing.T) {

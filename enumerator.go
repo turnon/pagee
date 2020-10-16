@@ -1,6 +1,18 @@
 package pagee
 
-func hashToRanger(hash map[string]interface{}) <-chan int {
+import (
+	"encoding/json"
+)
+
+type enumerator map[string]int
+
+func newIter(bytes []byte) enumerator {
+	var e enumerator
+	json.Unmarshal(bytes, &e)
+	return e
+}
+
+func (hash enumerator) toRange() <-chan int {
 	from := hash["from"]
 
 	step, stepExists := hash["step"]
@@ -10,10 +22,10 @@ func hashToRanger(hash map[string]interface{}) <-chan int {
 
 	to, toExists := hash["to"]
 	if toExists {
-		return newFinRange(from.(int), to.(int), step.(int))
+		return newFinRange(from, to, step)
 	}
 
-	return newInfRange(from.(int), step.(int))
+	return newInfRange(from, step)
 }
 
 func newFinRange(from, to int, step ...int) <-chan int {
