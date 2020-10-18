@@ -80,3 +80,21 @@ func TestDocEnum(t *testing.T) {
 		t.Error(docCount)
 	}
 }
+
+func TestItemEnum(t *testing.T) {
+	f := fetcher{URL: "https://gocn.vip/topics/excellent?page={{.}}", From: 1, To: 3, Selector: ".topic"}
+	enum, err := f.itemEnum()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	itemCount := 0
+	for range enum {
+		itemCount++
+	}
+
+	if itemCount != 75 {
+		t.Error(itemCount)
+	}
+}
