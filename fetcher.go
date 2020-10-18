@@ -5,6 +5,8 @@ import (
 	"strings"
 	"text/template"
 	"time"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 type fetcher struct {
@@ -32,6 +34,27 @@ func (f fetcher) waiting() <-chan time.Time {
 	ch := make(chan time.Time)
 	close(ch)
 	return ch
+}
+
+func (f fetcher) docEnum() (<-chan *goquery.Document, error) {
+	urls, err := f.urlEnum()
+	if err != nil {
+		return nil, err
+	}
+
+	docs := make(chan *goquery.Document)
+	go func() {
+		for url := range urls {
+			doc, err := url2doc(url)
+			if err != nil {
+				break
+			}
+			docs <- doc
+		}
+		close(docs)
+	}()
+
+	return docs, nil
 }
 
 func (f fetcher) urlEnum() (<-chan string, error) {

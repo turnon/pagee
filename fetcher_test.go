@@ -62,3 +62,21 @@ func TestInterval(t *testing.T) {
 		}
 	})
 }
+
+func TestDocEnum(t *testing.T) {
+	f := fetcher{URL: "https://gocn.vip/topics/excellent?page={{.}}", From: 1, To: 3}
+	enum, err := f.docEnum()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	docCount := 0
+	for range enum {
+		docCount++
+	}
+
+	if docCount != 3 {
+		t.Error(docCount)
+	}
+}
