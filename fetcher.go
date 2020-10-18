@@ -36,7 +36,7 @@ func (f fetcher) waiting() <-chan time.Time {
 	return ch
 }
 
-func (f fetcher) itemEnum() (<-chan *goquery.Selection, error) {
+func (f fetcher) ItemEnum() (<-chan *goquery.Selection, error) {
 	docs, err := f.docEnum()
 	if err != nil {
 		return nil, err
@@ -45,7 +45,11 @@ func (f fetcher) itemEnum() (<-chan *goquery.Selection, error) {
 	items := make(chan *goquery.Selection)
 	go func() {
 		for doc := range docs {
-			doc.Find(f.Selector).Each(func(_ int, s *goquery.Selection) {
+			selections := doc.Find(f.Selector)
+			if selections.Size() == 0 {
+				break
+			}
+			selections.Each(func(_ int, s *goquery.Selection) {
 				items <- s
 			})
 		}

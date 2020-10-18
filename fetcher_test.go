@@ -64,7 +64,7 @@ func TestInterval(t *testing.T) {
 }
 
 func TestDocEnum(t *testing.T) {
-	f := fetcher{URL: "https://gocn.vip/topics/excellent?page={{.}}", From: 1, To: 3}
+	f := fetcher{URL: "http://ifeve.com/page/{{.}}/", From: 1, To: 3}
 	enum, err := f.docEnum()
 	if err != nil {
 		t.Error(err)
@@ -82,8 +82,8 @@ func TestDocEnum(t *testing.T) {
 }
 
 func TestItemEnum(t *testing.T) {
-	f := fetcher{URL: "https://gocn.vip/topics/excellent?page={{.}}", From: 1, To: 3, Selector: ".topic"}
-	enum, err := f.itemEnum()
+	f := fetcher{URL: "http://ifeve.com/page/{{.}}/", From: 1, To: 3, Selector: ".post_wrap"}
+	enum, err := f.ItemEnum()
 	if err != nil {
 		t.Error(err)
 		return
@@ -94,7 +94,26 @@ func TestItemEnum(t *testing.T) {
 		itemCount++
 	}
 
-	if itemCount != 75 {
+	if itemCount != 45 {
+		t.Error(itemCount)
+	}
+}
+
+func TestUntilEndItemEnum(t *testing.T) {
+	f := fetcher{URL: "http://ifeve.com/page/{{.}}/", From: 111, To: math.Inf(1), Selector: ".post_wrap .title a"}
+	enum, err := f.ItemEnum()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	itemCount := 0
+	for range enum {
+		itemCount++
+	}
+
+	// today last page is 115
+	if itemCount < 60 {
 		t.Error(itemCount)
 	}
 }
