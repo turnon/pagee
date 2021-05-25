@@ -1,45 +1,51 @@
 package pagee
 
 import (
-	"strings"
-	"text/template"
+	"errors"
 
-	"net/http"
-
-	"github.com/PuerkitoBio/goquery"
+	"github.com/gocolly/colly/v2"
 )
 
-var temp = template.New("a")
+type Walk struct {
+	Uri  string
+	Next string
+	Item string
 
-func url2doc(url string) (*goquery.Document, error) {
-	resp, err := http.Get(url)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return doc, nil
+	LimitItems int
+	itemsCount int
+	LimitPages int
+	pagesCount int
 }
 
-func fillURL(uri string, n interface{}) (*string, error) {
-	t, err := temp.Parse(uri)
-	if err != nil {
-		return nil, err
+func (w *Walk) Start(fn func(e *colly.HTMLElement)) error {
+	if w.Uri == "" || w.Next == "" || w.Item == "" {
+		return errors.New("uri/href/item not defined")
 	}
 
-	sb := &strings.Builder{}
-	if err = t.Execute(sb, n); err != nil {
-		return nil, err
-	}
+	c := colly.NewCollector()
 
-	str := sb.String()
-	return &str, nil
+	c.OnHTML(w.Item, func(e *colly.HTMLElement) {
+		if w.reachLimit() {
+			return
+		}
+		fn(e)
+		w.itemsCount += 1
+	})
+
+	c.OnHTML(w.Next, func(e *colly.HTMLElement) {
+		if w.reachLimit() {
+			return
+		}
+		w.pagesCount += 1
+		link := e.Attr("href")
+		c.Visit(e.Request.AbsoluteURL(link))
+	})
+
+	c.Visit(w.Uri)
+
+	return nil
+}
+
+func (w *Walk) reachLimit() bool {
+	return (w.LimitItems != 0 && w.itemsCount >= w.LimitItems) || (w.LimitPages != 0 && w.pagesCount >= w.LimitPages)
 }

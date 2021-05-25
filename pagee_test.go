@@ -1,39 +1,88 @@
 package pagee
 
-import "testing"
+import (
+	"testing"
 
-func TestUrl2docWithRighturl(t *testing.T) {
-	url := "http://ifeve.com/"
-	doc, err := url2doc(url)
-	if err != nil {
-		t.Error(url + " should be accessible")
+	"github.com/gocolly/colly/v2"
+)
+
+const (
+	uri  = "https://gocn.vip/topics/excellent"
+	next = ".pagination .next a"
+	item = ".topics .topic .title a"
+)
+
+func TestStart(t *testing.T) {
+	w := Walk{
+		Uri:  uri,
+		Next: next,
+		Item: item,
 	}
-	if doc == nil {
-		t.Error(url + " should be parse-able")
+
+	elements := []string{}
+	err := w.Start(func(e *colly.HTMLElement) {
+		elements = append(elements, e.Attr("href"))
+	})
+
+	count := len(elements)
+	if count < 100 {
+		t.Errorf("not enough -> %d", count)
+	}
+
+	t.Log(count)
+	t.Log(elements[:60])
+
+	if err != nil {
+		t.Error(err)
 	}
 }
 
-func TestUrl2docWithWrongurl(t *testing.T) {
-	url := "http://ifeve2.com/"
-	doc, err := url2doc(url)
-	if err == nil {
-		t.Error(url + " should not be accessible")
+func TestLimitItems(t *testing.T) {
+	w := Walk{
+		Uri:        uri,
+		Next:       next,
+		Item:       item,
+		LimitItems: 61,
 	}
-	if doc != nil {
-		t.Error(url + " should not be parse-able")
+
+	elements := []string{}
+	err := w.Start(func(e *colly.HTMLElement) {
+		elements = append(elements, e.Attr("href"))
+	})
+
+	count := len(elements)
+	if count != 61 {
+		t.Errorf("limit is not working -> %d", count)
+	}
+
+	t.Log(elements[:count])
+
+	if err != nil {
+		t.Error(err)
 	}
 }
 
-func TestFillURL(t *testing.T) {
-	urlTemp := "http://ifeve.com/page/{{.}}/"
-	str, err := fillURL(urlTemp, 2)
-
-	if err != nil {
-		t.Error(urlTemp+" should be filled", err)
+func TestLimitPages(t *testing.T) {
+	w := Walk{
+		Uri:        uri,
+		Next:       next,
+		Item:       item,
+		LimitPages: 3,
 	}
 
-	expected := "http://ifeve.com/page/2/"
-	if *str != expected {
-		t.Error(urlTemp + " should turn into " + expected + ", but now it is " + *str)
+	elements := []string{}
+	err := w.Start(func(e *colly.HTMLElement) {
+		elements = append(elements, e.Attr("href"))
+	})
+
+	count := len(elements)
+	if count != 75 {
+		t.Errorf("limit is not working -> %d", count)
+	}
+
+	t.Log(elements[:count])
+
+	if err != nil {
+		t.Error(err)
 	}
 }
