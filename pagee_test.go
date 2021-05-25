@@ -6,20 +6,26 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
-func TestNextStart(t *testing.T) {
-	n := Next{
-		Uri:  "https://gocn.vip/topics/excellent",
-		Href: ".pagination .next a",
-		Item: ".topics .topic .title a",
+const (
+	uri  = "https://gocn.vip/topics/excellent"
+	next = ".pagination .next a"
+	item = ".topics .topic .title a"
+)
+
+func TestStart(t *testing.T) {
+	w := Walk{
+		Uri:  uri,
+		Next: next,
+		Item: item,
 	}
 
 	elements := []string{}
-	err := n.Start(func(e *colly.HTMLElement) {
+	err := w.Start(func(e *colly.HTMLElement) {
 		elements = append(elements, e.Attr("href"))
 	})
 
 	t.Log(len(elements))
-	t.Log(elements)
+	t.Log(elements[:60])
 
 	if err != nil {
 		t.Error(err)

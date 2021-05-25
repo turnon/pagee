@@ -6,27 +6,27 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
-type Next struct {
+type Walk struct {
 	Uri  string
-	Href string
+	Next string
 	Item string
 }
 
-func (n *Next) Start(fn func(e *colly.HTMLElement)) error {
-	if n.Uri == "" || n.Href == "" || n.Item == "" {
+func (w *Walk) Start(fn func(e *colly.HTMLElement)) error {
+	if w.Uri == "" || w.Next == "" || w.Item == "" {
 		return errors.New("uri/href/item not defined")
 	}
 
 	c := colly.NewCollector()
 
-	c.OnHTML(n.Item, fn)
+	c.OnHTML(w.Item, fn)
 
-	c.OnHTML(n.Href, func(e *colly.HTMLElement) {
+	c.OnHTML(w.Next, func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		c.Visit(e.Request.AbsoluteURL(link))
 	})
 
-	c.Visit(n.Uri)
+	c.Visit(w.Uri)
 
 	return nil
 }
