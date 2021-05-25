@@ -24,7 +24,12 @@ func TestStart(t *testing.T) {
 		elements = append(elements, e.Attr("href"))
 	})
 
-	t.Log(len(elements))
+	count := len(elements)
+	if count < 100 {
+		t.Errorf("not enough -> %d", count)
+	}
+
+	t.Log(count)
 	t.Log(elements[:60])
 
 	if err != nil {
@@ -47,6 +52,31 @@ func TestLimitItems(t *testing.T) {
 
 	count := len(elements)
 	if count != 61 {
+		t.Errorf("limit is not working -> %d", count)
+	}
+
+	t.Log(elements[:count])
+
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestLimitPages(t *testing.T) {
+	w := Walk{
+		Uri:        uri,
+		Next:       next,
+		Item:       item,
+		LimitPages: 3,
+	}
+
+	elements := []string{}
+	err := w.Start(func(e *colly.HTMLElement) {
+		elements = append(elements, e.Attr("href"))
+	})
+
+	count := len(elements)
+	if count != 75 {
 		t.Errorf("limit is not working -> %d", count)
 	}
 

@@ -13,6 +13,8 @@ type Walk struct {
 
 	LimitItems int
 	itemsCount int
+	LimitPages int
+	pagesCount int
 }
 
 func (w *Walk) Start(fn func(e *colly.HTMLElement)) error {
@@ -34,6 +36,7 @@ func (w *Walk) Start(fn func(e *colly.HTMLElement)) error {
 		if w.reachLimit() {
 			return
 		}
+		w.pagesCount += 1
 		link := e.Attr("href")
 		c.Visit(e.Request.AbsoluteURL(link))
 	})
@@ -44,8 +47,5 @@ func (w *Walk) Start(fn func(e *colly.HTMLElement)) error {
 }
 
 func (w *Walk) reachLimit() bool {
-	if w.LimitItems == 0 {
-		return false
-	}
-	return w.itemsCount >= w.LimitItems
+	return (w.LimitItems != 0 && w.itemsCount >= w.LimitItems) || (w.LimitPages != 0 && w.pagesCount >= w.LimitPages)
 }
