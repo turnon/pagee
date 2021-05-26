@@ -11,7 +11,7 @@ w := pagee.Walk{
     LimitPages: 3,
 }
 
-w.Start(func(e *colly.HTMLElement) {
+w.Start(func(e *pagee.Element) {
     // ....
 })
 ```

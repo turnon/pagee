@@ -17,7 +17,11 @@ type Walk struct {
 	pagesCount int
 }
 
-func (w *Walk) Start(fn func(e *colly.HTMLElement)) error {
+type Element struct {
+	*colly.HTMLElement
+}
+
+func (w *Walk) Start(fn func(e *Element)) error {
 	if w.Uri == "" || w.Next == "" || w.Item == "" {
 		return errors.New("uri/href/item not defined")
 	}
@@ -28,7 +32,7 @@ func (w *Walk) Start(fn func(e *colly.HTMLElement)) error {
 		if w.reachLimit() {
 			return
 		}
-		fn(e)
+		fn(&Element{e})
 		w.itemsCount += 1
 	})
 

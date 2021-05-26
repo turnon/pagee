@@ -2,8 +2,6 @@ package pagee
 
 import (
 	"testing"
-
-	"github.com/gocolly/colly/v2"
 )
 
 const (
@@ -20,7 +18,7 @@ func TestStart(t *testing.T) {
 	}
 
 	elements := []string{}
-	err := w.Start(func(e *colly.HTMLElement) {
+	err := w.Start(func(e *Element) {
 		elements = append(elements, e.Attr("href"))
 	})
 
@@ -46,7 +44,7 @@ func TestLimitItems(t *testing.T) {
 	}
 
 	elements := []string{}
-	err := w.Start(func(e *colly.HTMLElement) {
+	err := w.Start(func(e *Element) {
 		elements = append(elements, e.Attr("href"))
 	})
 
@@ -71,7 +69,7 @@ func TestLimitPages(t *testing.T) {
 	}
 
 	elements := []string{}
-	err := w.Start(func(e *colly.HTMLElement) {
+	err := w.Start(func(e *Element) {
 		elements = append(elements, e.Attr("href"))
 	})
 
