@@ -2,6 +2,8 @@ package pagee
 
 import (
 	"errors"
+	"net/http"
+	"net/url"
 
 	"github.com/gocolly/colly/v2"
 )
@@ -10,6 +12,8 @@ type Walk struct {
 	Uri  string
 	Next string
 	Item string
+
+	Cookies []*http.Cookie
 
 	LimitItems int
 	itemsCount int
@@ -27,6 +31,8 @@ func (w *Walk) Start(fn func(e *Element)) error {
 	}
 
 	c := colly.NewCollector()
+
+	w.setCookies(c)
 
 	c.OnHTML(w.Item, func(e *colly.HTMLElement) {
 		if w.reachLimit() {
@@ -52,4 +58,14 @@ func (w *Walk) Start(fn func(e *Element)) error {
 
 func (w *Walk) reachLimit() bool {
 	return (w.LimitItems != 0 && w.itemsCount >= w.LimitItems) || (w.LimitPages != 0 && w.pagesCount >= w.LimitPages)
+}
+
+func (w *Walk) setCookies(c *colly.Collector) {
+	if w.Cookies == nil {
+		return
+	}
+	u, _ := url.Parse(w.Uri)
+	u.Path = ""
+	host := u.String()
+	c.SetCookies(host, w.Cookies)
 }
